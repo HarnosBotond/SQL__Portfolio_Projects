@@ -1,5 +1,6 @@
-/*
-	What are the top-paying remote and local data analyst jobs?
+/* This is just for showcasing some SQL Knowledge! 
+This analysis aims to demonstrate SQL skills. Please note that the results are not representative, as I used a less extensive version of the dataset available at datanerd.tech.
+What are the top-paying remote and local data analyst jobs?
 */
 
 SELECT 
