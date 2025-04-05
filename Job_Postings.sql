@@ -1,6 +1,8 @@
-/* This is just for showcasing some SQL Knowledge! 
-This analysis aims to demonstrate SQL skills. Please note that the results are not representative, as I used a less extensive version of the dataset available at datanerd.tech.
-What are the top-paying remote and local data analyst jobs?
+/* 
+📝 This is just for showcasing some SQL knowledge!
+💡 This analysis aims to demonstrate SQL skills.
+⚠️ Please note that the results are not representative, as I used a less extensive version of the dataset available at datanerd.tech.
+💼 What are the top-paying remote 🌐 and local 🏢 data analyst jobs?"
 */
 
 SELECT 
@@ -53,8 +55,8 @@ LIMIT 10;
 */
 
 /*
-	Which skills are the most valuable globally and in Hungary?
-	-Let's check that by building upon my last query, using it as a CTE, and joining the skills table through an intermediary table.
+Which skills are the most valuable globally and in Hungary?
+Let's check that by building upon my last query, using it as a CTE, and joining the skills table through an intermediary table.
 */
 
 WITH top_paying_jobs AS (
@@ -155,7 +157,7 @@ ORDER BY
 */
 
 /*
-	The results of the previous query are a bit hard to read, so let's fix that. (And yes, I intentionally display results in text instead of JSON format for easier readability.)
+The results of the previous query are a bit hard to read, so let's fix that. (And yes, I intentionally display results in text instead of JSON format for easier readability.)
 */
 
 WITH top_paying_jobs AS (
@@ -209,3 +211,65 @@ Now, the same for Hungary! Although this dataset contains few records of Hungari
 |1,321,883|Data Analyst                                                   |Sleek        |98,500         |sql, python, r, excel, tableau, sheets|
 |736,407  |TEAM LEADER – DATA ANALYTICS, MICROELECTRONICS (MEMS) SENSOR...|Bosch Group  |89,100         |python, hadoop, tableau, git, jira    |                                                                                         |
 */
+/*
+🔍 Now, let's take a look at the most in-demand skills 📊 (excluding soft skills for now ❌🧠) for data analysts both globally 🌍 and in Hungary 🇭🇺.
+*/
+SELECT 
+	skills AS skill_name,
+	COUNT(skills_job_dim.job_id) AS demand_count
+FROM job_postings_fact 
+INNER JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
+INNER JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+WHERE 
+	job_title_short = 'Data Analyst'
+GROUP BY 
+	skills
+ORDER BY 
+	demand_count DESC 
+LIMIT 10;
+/* 🌍Globally:
+|skill_name|demand_count|     
+|----------|------------|
+|sql       |310         |
+|excel     |263         |
+|python    |201         |
+|tableau   |151         |
+|power bi  |145         |
+|sap       |99          |
+|r         |86          |
+|vba       |48          |
+|azure     |46          |
+|oracle    |45          |
+*/
+SELECT 
+	skills AS skill_name,
+	COUNT(skills_job_dim.job_id) AS demand_count
+FROM job_postings_fact 
+INNER JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
+INNER JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+WHERE 
+	job_title_short = 'Data Analyst' AND 
+	job_country = 'Hungary'
+GROUP BY 
+	skills
+ORDER BY 
+	demand_count DESC 
+LIMIT 10;	
+/*Results for Hungary:
+|skill_name|demand_count|
+|----------|------------|
+|sql       |310         |
+|excel     |263         |
+|python    |201         |
+|tableau   |151         |
+|power bi  |145         |
+|sap       |99          |
+|r         |86          |
+|vba       |48          |
+|azure     |46          |
+|oracle    |45          |
+
+The results show that both globally and in Hungary 🇭🇺, the most in-demand skills for data analysts are SQL 🗃️, Excel 📊, Python 🐍, and data visualization tools 📈.
+*/
+
+
