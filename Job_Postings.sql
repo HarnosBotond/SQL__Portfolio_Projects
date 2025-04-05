@@ -332,4 +332,76 @@ LIMIT
 |python    |96,575    |
 🐍 At least Python made it into the top 10! Overall, 
 we can say that niche skills tend to be more valuable 💰 at the senior level 👔, 
-while for juniors like me , SQL 🗃️ and Excel 📊 are the essentials we should focus on."/
+while for juniors like me , SQL 🗃️ and Excel 📊 are the essentials we should focus on."*/
+
+/*So, what are the most optimal skills for me to master? 🤔💡*/
+WITH skills_demand AS (
+	SELECT 
+		skills_dim.skill_id,
+		skills_dim.skills,
+		COUNT(skills_job_dim.job_id) AS demand_count
+	FROM job_postings_fact 
+	INNER JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
+	INNER JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+	WHERE 
+		job_title_short = 'Data Analyst' AND 
+		salary_year_avg IS NOT NULL 
+	GROUP BY 
+		skills_dim.skill_id
+), average_salary AS (
+	SELECT
+		skills_job_dim.skill_id,
+		ROUND(AVG(salary_year_avg), 0) AS avg_salary
+	FROM job_postings_fact
+	INNER JOIN skills_job_dim ON skills_job_dim.job_id = job_postings_fact.job_id
+	INNER JOIN skills_dim ON skills_dim.skill_id = skills_job_dim.skill_id
+	WHERE  
+		job_title_short = 'Data Analyst' AND 
+		salary_year_avg IS NOT NULL AND 
+		job_country = 'Hungary'
+	GROUP BY  
+		skills_job_dim.skill_id
+)
+SELECT 
+	skills_demand.skill_id,
+	skills_demand.skills,
+	demand_count,
+	avg_salary
+FROM 
+	skills_demand 
+INNER JOIN average_salary ON skills_demand.skill_id = average_salary.skill_id
+ORDER BY 
+	demand_count DESC,
+	avg_salary DESC
+LIMIT 
+	25;
+/* The most optimal skills for me to master as a junior data analyst are Python 🐍, SQL 🗃️, and Excel 📊. 
+As a next step, learning Tableau 📈 and R 🧮 for data visualization and statistics, plus cloud tools like AWS ☁️, Azure 🌥️, or Snowflake ❄️.
+|skill_id|skills    |demand_count|avg_salary|
+|--------|----------|------------|----------|
+|0       |sql       |3,083       |90,641    |
+|181     |excel     |2,143       |83,035    |
+|1       |python    |1,840       |96,575    |
+|182     |tableau   |1,659       |99,819    |
+|5       |r         |1,073       |98,500    |
+|188     |word      |527         |72,900    |
+|196     |powerpoint|524         |72,900    |
+|61      |sql server|336         |49,567    |
+|79      |oracle    |332         |56,700    |
+|74      |azure     |319         |155,000   |
+|76      |aws       |291         |113,950   |
+|80      |snowflake |241         |155,000   |
+|92      |spark     |187         |72,900    |
+|189     |sap       |183         |70,150    |
+|192     |sheets    |155         |75,757    |
+|233     |jira      |145         |89,100    |
+|97      |hadoop    |140         |89,100    |
+|2       |nosql     |108         |72,900    |
+|75      |databricks|102         |113,950   |
+|141     |express   |96          |72,900    |
+|78      |redshift  |90          |111,202   |
+|93      |pandas    |90          |72,900    |
+|81      |gcp       |78          |155,000   |
+|210     |git       |74          |81,000    |
+|3       |scala     |59          |72,900    |
+*/
