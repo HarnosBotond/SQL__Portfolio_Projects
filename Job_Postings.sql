@@ -54,10 +54,8 @@ LIMIT 10;
 	|829,005  |Data Operations Manager - Link                                 |Budapest, Hungary|Full-time        |80,850         |2023-06-07 17:54:57.000|Veeva Systems             |
 */
 
-/*
-Which skills are the most valuable globally and in Hungary?
-Let's check that by building upon my last query, using it as a CTE, and joining the skills table through an intermediary table.
-*/
+/* Which skills are the most valuable globally and in Hungary?
+Let's check that by building upon my last query, using it as a CTE, and joining the skills table through an intermediary table.*/
 
 WITH top_paying_jobs AS (
 SELECT 
@@ -156,9 +154,7 @@ ORDER BY
 |387,860  |ERM Data Analyst                               |184,000        |Get It Recruit - Information Technology|r         |
 */
 
-/*
-The results of the previous query are a bit hard to read, so let's fix that. (And yes, I intentionally display results in text instead of JSON format for easier readability.)
-*/
+/* The results of the previous query are a bit hard to read, so let's fix that. (And yes, I intentionally display results in text instead of JSON format for easier readability.)*/
 
 WITH top_paying_jobs AS (
     SELECT 
@@ -211,9 +207,9 @@ Now, the same for Hungary! Although this dataset contains few records of Hungari
 |1,321,883|Data Analyst                                                   |Sleek        |98,500         |sql, python, r, excel, tableau, sheets|
 |736,407  |TEAM LEADER – DATA ANALYTICS, MICROELECTRONICS (MEMS) SENSOR...|Bosch Group  |89,100         |python, hadoop, tableau, git, jira    |                                                                                         |
 */
-/*
-🔍 Now, let's take a look at the most in-demand skills 📊 (excluding soft skills for now ❌🧠) for data analysts both globally 🌍 and in Hungary 🇭🇺.
-*/
+
+/*🔍 Now, let's take a look at the most in-demand skills 📊 (excluding soft skills for now ❌🧠) for data analysts both globally 🌍 and in Hungary 🇭🇺.*/
+
 SELECT 
 	skills AS skill_name,
 	COUNT(skills_job_dim.job_id) AS demand_count
@@ -228,18 +224,18 @@ ORDER BY
 	demand_count DESC 
 LIMIT 10;
 /* 🌍Globally:
-|skill_name|demand_count|     
+|skill_name|demand_count|
 |----------|------------|
-|sql       |310         |
-|excel     |263         |
-|python    |201         |
-|tableau   |151         |
-|power bi  |145         |
-|sap       |99          |
-|r         |86          |
-|vba       |48          |
-|azure     |46          |
-|oracle    |45          |
+|sql       |92,628      |
+|excel     |67,031      |
+|python    |57,326      |
+|tableau   |46,554      |
+|power bi  |39,468      |
+|r         |30,075      |
+|sas       |28,068      |
+|powerpoint|13,848      |
+|word      |13,591      |
+|sap       |11,297      |
 */
 SELECT 
 	skills AS skill_name,
@@ -269,7 +265,71 @@ LIMIT 10;
 |azure     |46          |
 |oracle    |45          |
 
-The results show that both globally and in Hungary 🇭🇺, the most in-demand skills for data analysts are SQL 🗃️, Excel 📊, Python 🐍, and data visualization tools 📈.
-*/
+The results show that both globally and in Hungary 🇭🇺, the most in-demand skills for data analysts are SQL 🗃️, Excel 📊, Python 🐍, and data visualization tools 📈.*/
 
+/* 💡 Now that we see SQL 🗃️ and Excel 📊 are the most commonly sought-after skills, let's take a look at the average salary associated with each skill.
+💭 My initial hypothesis is that Python 🐍 or other niche tools will be among the highest-paying skills 💰, since SQL and Excel are typically requirements for junior analyst roles 📈, 
+while more specialized tools and Python are used later on in more advanced or specialized positions 🚀.*/
 
+SELECT 
+	skills,
+	ROUND(AVG(salary_year_avg), 0) AS avg_salary
+FROM job_postings_fact
+INNER JOIN skills_job_dim ON skills_job_dim.job_id = job_postings_fact.job_id
+INNER JOIN skills_dim ON skills_dim.skill_id = skills_job_dim.skill_id
+WHERE  
+	job_title_short = 'Data Analyst' AND 
+	salary_year_avg IS NOT NULL
+GROUP BY  
+	skills 
+ORDER BY 
+	avg_salary DESC 
+LIMIT 
+	10;
+/* Globally:
+|skills   |avg_salary|
+|---------|----------|
+|svn      |400,000   |
+|solidity |179,000   |
+|couchbase|160,515   |
+|datarobot|155,486   |
+|golang   |155,000   |
+|mxnet    |149,000   |
+|dplyr    |147,633   |
+|vmware   |147,500   |
+|terraform|146,734   |
+|twilio   |138,500   |
+neither Excel 📊 nor SQL 🗃️ made it into the top 10 highest-paying skills! 😔*/
+
+SELECT 
+	skills,
+	ROUND(AVG(salary_year_avg), 0) AS avg_salary
+FROM job_postings_fact
+INNER JOIN skills_job_dim ON skills_job_dim.job_id = job_postings_fact.job_id
+INNER JOIN skills_dim ON skills_dim.skill_id = skills_job_dim.skill_id
+WHERE  
+	job_title_short = 'Data Analyst' AND 
+	salary_year_avg IS NOT NULL AND 
+	job_country = 'Hungary'
+GROUP BY  
+	skills 
+ORDER BY 
+	avg_salary DESC 
+LIMIT 
+	10;
+/*Hungary:
+|skills    |avg_salary|
+|----------|----------|
+|azure     |155,000   |
+|snowflake |155,000   |
+|gcp       |155,000   |
+|aws       |113,950   |
+|databricks|113,950   |
+|redshift  |111,202   |
+|atlassian |100,500   |
+|tableau   |99,819    |
+|r         |98,500    |
+|python    |96,575    |
+🐍 At least Python made it into the top 10! Overall, 
+we can say that niche skills tend to be more valuable 💰 at the senior level 👔, 
+while for juniors like me , SQL 🗃️ and Excel 📊 are the essentials we should focus on."/
